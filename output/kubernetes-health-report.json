@@ -1,0 +1,55 @@
+{
+  "generated_at": "2026-07-25T20:07:40.001447+00:00",
+  "cluster_version": "v1.30.14",
+  "nodes": [
+    {
+      "name": "k8s-master",
+      "ready": true,
+      "status": "True",
+      "reason": "KubeletReady",
+      "kubelet_version": "v1.30.14"
+    },
+    {
+      "name": "k8s-worker01",
+      "ready": true,
+      "status": "True",
+      "reason": "KubeletReady",
+      "kubelet_version": "v1.30.14"
+    },
+    {
+      "name": "k8s-worker02",
+      "ready": true,
+      "status": "True",
+      "reason": "KubeletReady",
+      "kubelet_version": "v1.30.14"
+    }
+  ],
+  "pods": {
+    "total": 21,
+    "healthy": 20,
+    "unhealthy_count": 1,
+    "unhealthy": [
+      {
+        "namespace": "calico-system",
+        "name": "calico-node-2zmdq",
+        "phase": "Running"
+      }
+    ]
+  },
+  "namespaces": [
+    "calico-apiserver",
+    "calico-system",
+    "default",
+    "kube-node-lease",
+    "kube-public",
+    "kube-system",
+    "tigera-operator"
+  ],
+  "warning_events": [
+    {
+      "namespace": "calico-system",
+      "reason": "Unhealthy",
+      "message": "Readiness probe failed: calico/node is not ready: BIRD is not ready: Error querying BIRD: unable to connect to BIRDv4 socket: dial unix /var/run/calico/bird.ctl: connect: connection refused\n"
+    }
+  ]
+}
