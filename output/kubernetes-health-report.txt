@@ -1,23 +1,29 @@
 ========================================================================
-Kubernetes Cluster Health Report
+Kubernetes Cluster Health Report v2
 ========================================================================
-Generated at       : 2026-07-25T20:07:40.001447+00:00
+Overall status     : HEALTHY
+CI/CD exit code    : 0
+Generated at       : 2026-07-26T10:16:31.920710+00:00
 Cluster version    : v1.30.14
-Node count         : 3
-Pod count          : 21
-Healthy pods       : 20
-Unhealthy pods     : 1
+Ready nodes        : 3/3
+Healthy pods       : 21/21
+Unhealthy pods     : 0
 Namespace count    : 7
 
+Current Findings:
+- All nodes and current pods are healthy.
+
 Nodes:
-- k8s-master: Ready (v1.30.14)
-- k8s-worker01: Ready (v1.30.14)
-- k8s-worker02: Ready (v1.30.14)
+- k8s-master: Ready ip=192.168.48.129 version=v1.30.14
+- k8s-worker01: Ready ip=192.168.48.133 version=v1.30.14
+- k8s-worker02: Ready ip=192.168.48.134 version=v1.30.14
 
 Unhealthy Pods:
-- calico-system/calico-node-2zmdq phase=Running
+- None
 
-Recent Warning Events:
-- [calico-system] Unhealthy: Readiness probe failed: calico/node is not ready: BIRD is not ready: Error querying BIRD: unable to connect to BIRDv4 socket: dial unix /var/run/calico/bird.ctl: connect: connection refused
+Recent Warning Events (historical context only):
+- [calico-system] Unhealthy object=Pod/calico-node-2zmdq count=698 last_seen=2026-07-26T10:00:50Z: Readiness probe failed: calico/node is not ready: BIRD is not ready: Error querying BIRD: unable to connect to BIRDv4 socket: dial unix /var/run/calico/bird.ctl: connect: connection refused
+
+- [calico-system] Unhealthy object=Pod/calico-kube-controllers-56959cc9bd-mrwtc count=1 last_seen=2026-07-26T09:35:40Z: Readiness probe failed: Error verifying datastore: Get "https://10.96.0.1:443/apis/crd.projectcalico.org/v1/clusterinformations/default": context deadline exceeded
 
 ========================================================================
