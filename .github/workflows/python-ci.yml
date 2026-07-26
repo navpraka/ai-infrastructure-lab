@@ -25,6 +25,10 @@ on:
 
 permissions:
   contents: read
+  packages: write
+
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository }}/kubernetes-health-reporter
 
 concurrency:
   group: python-docker-ci-${{ github.workflow }}-${{ github.ref }}
@@ -89,3 +93,25 @@ jobs:
               health-reporter-ci:test \
               -u
           )" = "10001"
+
+      - name: Authenticate to GitHub Container Registry
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" |
+            docker login ghcr.io \
+              --username "${{ github.actor }}" \
+              --password-stdin
+
+      - name: Publish container image
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          docker tag \
+            health-reporter-ci:test \
+            "${IMAGE_NAME}:latest"
+
+          docker tag \
+            health-reporter-ci:test \
+            "${IMAGE_NAME}:sha-${GITHUB_SHA}"
+
+          docker push "${IMAGE_NAME}:latest"
+          docker push "${IMAGE_NAME}:sha-${GITHUB_SHA}"
