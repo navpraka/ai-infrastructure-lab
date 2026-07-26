@@ -179,3 +179,42 @@ def test_event_timestamp_uses_last_timestamp() -> None:
         reporter.event_timestamp(event)
         == "2026-07-26T10:00:50Z"
     )
+def test_build_prometheus_metrics() -> None:
+    """Prometheus output contains cluster health measurements."""
+
+    report = {
+        "generated_at": "2026-07-26T14:00:04+00:00",
+        "overall_status": "HEALTHY",
+        "exit_code": 0,
+        "nodes": [
+            {"name": "node01", "ready": True},
+            {"name": "node02", "ready": True},
+            {"name": "node03", "ready": False},
+        ],
+        "pods": {
+            "total": 10,
+            "healthy": 9,
+            "unhealthy_count": 1,
+        },
+        "namespaces": ["default", "kube-system"],
+        "warning_events": [{}, {}],
+    }
+
+    metrics = reporter.build_prometheus_metrics(report)
+
+    assert (
+        'kubernetes_health_reporter_last_run_status'
+        '{status="healthy"} 1'
+    ) in metrics
+    assert "kubernetes_health_reporter_exit_code 0" in metrics
+    assert "kubernetes_health_reporter_nodes_total 3" in metrics
+    assert "kubernetes_health_reporter_nodes_ready 2" in metrics
+    assert "kubernetes_health_reporter_pods_total 10" in metrics
+    assert "kubernetes_health_reporter_pods_healthy 9" in metrics
+    assert "kubernetes_health_reporter_pods_unhealthy 1" in metrics
+    assert "kubernetes_health_reporter_namespaces_total 2" in metrics
+    assert (
+        "kubernetes_health_reporter_warning_events_total 2"
+        in metrics
+    )
+    assert metrics.endswith("\n")

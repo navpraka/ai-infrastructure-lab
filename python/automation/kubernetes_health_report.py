@@ -15,6 +15,10 @@ OUTPUT_DIRECTORY = Path("output")
 JSON_REPORT = OUTPUT_DIRECTORY / "kubernetes-health-report.json"
 TEXT_REPORT = OUTPUT_DIRECTORY / "kubernetes-health-report.txt"
 
+PROMETHEUS_REPORT = (
+    OUTPUT_DIRECTORY / "kubernetes-health-report.prom"
+)
+
 EXIT_CODES = {
     "HEALTHY": 0,
     "WARNING": 1,
@@ -454,6 +458,81 @@ def build_text_report(report: dict[str, Any]) -> str:
     lines.append("=" * 72)
     return "\n".join(lines)
 
+def build_prometheus_metrics(report: dict[str, Any]) -> str:
+    """Convert the report into Prometheus text exposition format."""
+
+    status = report["overall_status"].lower()
+    generated_timestamp = datetime.fromisoformat(
+        report["generated_at"]
+    ).timestamp()
+
+    lines = [
+        "# HELP kubernetes_health_reporter_last_run_status "
+        "Health status from the latest reporter execution.",
+        "# TYPE kubernetes_health_reporter_last_run_status gauge",
+    ]
+
+    for possible_status in ("healthy", "warning", "critical"):
+        value = 1 if status == possible_status else 0
+        lines.append(
+            "kubernetes_health_reporter_last_run_status"
+            f'{{status="{possible_status}"}} {value}'
+        )
+
+    lines.extend(
+        [
+            "# HELP kubernetes_health_reporter_exit_code "
+            "Exit code from the latest reporter execution.",
+            "# TYPE kubernetes_health_reporter_exit_code gauge",
+            "kubernetes_health_reporter_exit_code "
+            f"{report['exit_code']}",
+            "# HELP kubernetes_health_reporter_last_run_timestamp_seconds "
+            "Unix timestamp of the latest reporter execution.",
+            "# TYPE "
+            "kubernetes_health_reporter_last_run_timestamp_seconds "
+            "gauge",
+            "kubernetes_health_reporter_last_run_timestamp_seconds "
+            f"{generated_timestamp:.0f}",
+            "# HELP kubernetes_health_reporter_nodes_total "
+            "Total Kubernetes nodes.",
+            "# TYPE kubernetes_health_reporter_nodes_total gauge",
+            "kubernetes_health_reporter_nodes_total "
+            f"{len(report['nodes'])}",
+            "# HELP kubernetes_health_reporter_nodes_ready "
+            "Ready Kubernetes nodes.",
+            "# TYPE kubernetes_health_reporter_nodes_ready gauge",
+            "kubernetes_health_reporter_nodes_ready "
+            f"{sum(node['ready'] for node in report['nodes'])}",
+            "# HELP kubernetes_health_reporter_pods_total "
+            "Total Kubernetes pods.",
+            "# TYPE kubernetes_health_reporter_pods_total gauge",
+            "kubernetes_health_reporter_pods_total "
+            f"{report['pods']['total']}",
+            "# HELP kubernetes_health_reporter_pods_healthy "
+            "Healthy Kubernetes pods.",
+            "# TYPE kubernetes_health_reporter_pods_healthy gauge",
+            "kubernetes_health_reporter_pods_healthy "
+            f"{report['pods']['healthy']}",
+            "# HELP kubernetes_health_reporter_pods_unhealthy "
+            "Unhealthy Kubernetes pods.",
+            "# TYPE kubernetes_health_reporter_pods_unhealthy gauge",
+            "kubernetes_health_reporter_pods_unhealthy "
+            f"{report['pods']['unhealthy_count']}",
+            "# HELP kubernetes_health_reporter_namespaces_total "
+            "Total Kubernetes namespaces.",
+            "# TYPE kubernetes_health_reporter_namespaces_total gauge",
+            "kubernetes_health_reporter_namespaces_total "
+            f"{len(report['namespaces'])}",
+            "# HELP kubernetes_health_reporter_warning_events_total "
+            "Warning events included in the latest report.",
+            "# TYPE kubernetes_health_reporter_warning_events_total "
+            "gauge",
+            "kubernetes_health_reporter_warning_events_total "
+            f"{len(report['warning_events'])}",
+        ]
+    )
+
+    return "\n".join(lines) + "\n"
 
 def main() -> int:
     """Collect health data and write JSON and text reports."""
@@ -494,12 +573,22 @@ def main() -> int:
 
         text_report = build_text_report(report)
         TEXT_REPORT.write_text(text_report, encoding="utf-8")
+        prometheus_metrics = build_prometheus_metrics(report)
+        PROMETHEUS_REPORT.write_text(
+            prometheus_metrics,
+            encoding="utf-8",
+        )
 
         print(text_report)
         print()
         print(f"JSON report written to: {JSON_REPORT}")
         print(f"Text report written to: {TEXT_REPORT}")
+        print(
+            "Prometheus report written to: "
+            f"{PROMETHEUS_REPORT}"
+        )
         return EXIT_CODES[overall_status]
+
     except (RuntimeError, json.JSONDecodeError) as error:
         print(f"ERROR: {error}")
         return EXIT_CODES["CRITICAL"]

@@ -1,6 +1,6 @@
 {
   "report_version": 2,
-  "generated_at": "2026-07-26T10:16:31.920710+00:00",
+  "generated_at": "2026-07-26T16:02:17.609892+00:00",
   "overall_status": "HEALTHY",
   "exit_code": 0,
   "findings": [
@@ -37,12 +37,13 @@
     }
   ],
   "pods": {
-    "total": 21,
-    "healthy": 21,
+    "total": 25,
+    "healthy": 25,
     "unhealthy_count": 0,
     "unhealthy": []
   },
   "namespaces": [
+    "ai-infrastructure",
     "calico-apiserver",
     "calico-system",
     "default",
@@ -53,20 +54,20 @@
   ],
   "warning_events": [
     {
-      "namespace": "calico-system",
-      "reason": "Unhealthy",
-      "object": "Pod/calico-node-2zmdq",
-      "count": 698,
-      "last_seen": "2026-07-26T10:00:50Z",
-      "message": "Readiness probe failed: calico/node is not ready: BIRD is not ready: Error querying BIRD: unable to connect to BIRDv4 socket: dial unix /var/run/calico/bird.ctl: connect: connection refused\n"
+      "namespace": "ai-infrastructure",
+      "reason": "FailedCreate",
+      "object": "Job/kubernetes-health-reporter-29751360",
+      "count": 1,
+      "last_seen": "2026-07-26T16:02:14Z",
+      "message": "Error creating: Unauthorized"
     },
     {
-      "namespace": "calico-system",
-      "reason": "Unhealthy",
-      "object": "Pod/calico-kube-controllers-56959cc9bd-mrwtc",
+      "namespace": "ai-infrastructure",
+      "reason": "FailedCreate",
+      "object": "CronJob/kubernetes-health-reporter",
       "count": 1,
-      "last_seen": "2026-07-26T09:35:40Z",
-      "message": "Readiness probe failed: Error verifying datastore: Get \"https://10.96.0.1:443/apis/crd.projectcalico.org/v1/clusterinformations/default\": context deadline exceeded\n"
+      "last_seen": "2026-07-26T16:02:14Z",
+      "message": "Error creating job: Unauthorized"
     }
   ]
 }

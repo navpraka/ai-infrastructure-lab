@@ -1,0 +1,32 @@
+# HELP kubernetes_health_reporter_last_run_status Health status from the latest reporter execution.
+# TYPE kubernetes_health_reporter_last_run_status gauge
+kubernetes_health_reporter_last_run_status{status="healthy"} 1
+kubernetes_health_reporter_last_run_status{status="warning"} 0
+kubernetes_health_reporter_last_run_status{status="critical"} 0
+# HELP kubernetes_health_reporter_exit_code Exit code from the latest reporter execution.
+# TYPE kubernetes_health_reporter_exit_code gauge
+kubernetes_health_reporter_exit_code 0
+# HELP kubernetes_health_reporter_last_run_timestamp_seconds Unix timestamp of the latest reporter execution.
+# TYPE kubernetes_health_reporter_last_run_timestamp_seconds gauge
+kubernetes_health_reporter_last_run_timestamp_seconds 1785081738
+# HELP kubernetes_health_reporter_nodes_total Total Kubernetes nodes.
+# TYPE kubernetes_health_reporter_nodes_total gauge
+kubernetes_health_reporter_nodes_total 3
+# HELP kubernetes_health_reporter_nodes_ready Ready Kubernetes nodes.
+# TYPE kubernetes_health_reporter_nodes_ready gauge
+kubernetes_health_reporter_nodes_ready 3
+# HELP kubernetes_health_reporter_pods_total Total Kubernetes pods.
+# TYPE kubernetes_health_reporter_pods_total gauge
+kubernetes_health_reporter_pods_total 25
+# HELP kubernetes_health_reporter_pods_healthy Healthy Kubernetes pods.
+# TYPE kubernetes_health_reporter_pods_healthy gauge
+kubernetes_health_reporter_pods_healthy 25
+# HELP kubernetes_health_reporter_pods_unhealthy Unhealthy Kubernetes pods.
+# TYPE kubernetes_health_reporter_pods_unhealthy gauge
+kubernetes_health_reporter_pods_unhealthy 0
+# HELP kubernetes_health_reporter_namespaces_total Total Kubernetes namespaces.
+# TYPE kubernetes_health_reporter_namespaces_total gauge
+kubernetes_health_reporter_namespaces_total 8
+# HELP kubernetes_health_reporter_warning_events_total Warning events included in the latest report.
+# TYPE kubernetes_health_reporter_warning_events_total gauge
+kubernetes_health_reporter_warning_events_total 2
