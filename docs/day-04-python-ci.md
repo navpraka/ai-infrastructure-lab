@@ -34,5 +34,5 @@ Runner: GitHub-hosted Ubuntu
 Python: 3.12.13
 Tests: 11 passed
 Duration: 12 seconds
-
+```
 
