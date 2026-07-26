@@ -1,0 +1,22 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: health-reporter-reader
+  labels:
+    app.kubernetes.io/name: kubernetes-health-reporter
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - nodes
+      - namespaces
+      - pods
+      - events
+    verbs:
+      - get
+      - list
+
+  - nonResourceURLs:
+      - /version
+    verbs:
+      - get

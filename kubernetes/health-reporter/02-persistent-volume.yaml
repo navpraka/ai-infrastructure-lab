@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: health-reporter-pv
+  labels:
+    app.kubernetes.io/name: kubernetes-health-reporter
+spec:
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-storage
+  local:
+    path: /var/lib/ai-infrastructure-lab/health-reporter
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - k8s-worker01

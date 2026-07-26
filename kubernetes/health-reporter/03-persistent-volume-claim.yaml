@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: health-reporter-output
+  namespace: ai-infrastructure
+  labels:
+    app.kubernetes.io/name: kubernetes-health-reporter
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-storage
+  resources:
+    requests:
+      storage: 1Gi
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kubernetes-health-reporter
