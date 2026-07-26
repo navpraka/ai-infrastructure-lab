@@ -120,3 +120,37 @@ def test_cronjob_forbids_concurrent_runs() -> None:
 
     assert cronjob["spec"]["concurrencyPolicy"] == "Forbid"
     assert cronjob["spec"]["schedule"] == "*/15 * * * *"
+
+def test_metrics_deployment_is_hardened() -> None:
+    """The metrics endpoint must use hardened security settings."""
+
+    deployment = load_manifest("08-metrics-deployment.yaml")
+    pod_spec = deployment["spec"]["template"]["spec"]
+    container = pod_spec["containers"][0]
+    security = container["securityContext"]
+
+    assert pod_spec["automountServiceAccountToken"] is False
+    assert pod_spec["securityContext"]["runAsNonRoot"] is True
+    assert security["allowPrivilegeEscalation"] is False
+    assert security["readOnlyRootFilesystem"] is True
+    assert security["capabilities"]["drop"] == ["ALL"]
+
+    report_mount = container["volumeMounts"][0]
+    assert report_mount["readOnly"] is True
+
+    report_volume = pod_spec["volumes"][0]
+    assert report_volume["persistentVolumeClaim"]["readOnly"] is True
+
+
+def test_metrics_service_is_prometheus_discoverable() -> None:
+    """The Service must advertise its Prometheus scrape endpoint."""
+
+    service = load_manifest("09-metrics-service.yaml")
+    annotations = service["metadata"]["annotations"]
+
+    assert annotations["prometheus.io/scrape"] == "true"
+    assert (
+        annotations["prometheus.io/path"]
+        == "/kubernetes-health-report.prom"
+    )
+    assert annotations["prometheus.io/port"] == "8080"

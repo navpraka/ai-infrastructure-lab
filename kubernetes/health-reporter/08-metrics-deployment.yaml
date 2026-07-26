@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: health-reporter-metrics
+  namespace: ai-infrastructure
+  labels:
+    app.kubernetes.io/name: kubernetes-health-reporter
+    app.kubernetes.io/component: metrics
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kubernetes-health-reporter
+      app.kubernetes.io/component: metrics
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: kubernetes-health-reporter
+        app.kubernetes.io/component: metrics
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: metrics-server
+          image: ghcr.io/navpraka/ai-infrastructure-lab/kubernetes-health-reporter@sha256:60936b8a487d263f99e5417ecbf1545fcb05f5c2b41a2c47c9fc0ae358ab18ec
+          imagePullPolicy: IfNotPresent
+          command:
+            - python
+            - -m
+            - http.server
+            - "8080"
+            - --directory
+            - /app/output
+          ports:
+            - name: metrics
+              containerPort: 8080
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+          readinessProbe:
+            httpGet:
+              path: /kubernetes-health-report.prom
+              port: metrics
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: metrics
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          volumeMounts:
+            - name: reports
+              mountPath: /app/output
+              readOnly: true
+      volumes:
+        - name: reports
+          persistentVolumeClaim:
+            claimName: health-reporter-output
+            readOnly: true

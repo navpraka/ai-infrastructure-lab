@@ -38,7 +38,7 @@ spec:
 
           containers:
             - name: health-reporter
-              image: ghcr.io/navpraka/ai-infrastructure-lab/kubernetes-health-reporter@sha256:b8bb45bab8e3fa555d5c6e5221399065d6e98374880044f7bb5e05aca3695127
+              image: ghcr.io/navpraka/ai-infrastructure-lab/kubernetes-health-reporter@sha256:60936b8a487d263f99e5417ecbf1545fcb05f5c2b41a2c47c9fc0ae358ab18ec
               imagePullPolicy: IfNotPresent
               workingDir: /app
 
