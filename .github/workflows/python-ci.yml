@@ -1,4 +1,4 @@
-name: Python CI
+name: Python and Docker CI
 
 on:
   push:
@@ -8,6 +8,8 @@ on:
       - "python/**/*.py"
       - "tests/**/*.py"
       - "requirements-dev.txt"
+      - "docker/**"
+      - ".dockerignore"
       - ".github/workflows/python-ci.yml"
 
   pull_request:
@@ -17,20 +19,22 @@ on:
       - "python/**/*.py"
       - "tests/**/*.py"
       - "requirements-dev.txt"
+      - "docker/**"
+      - ".dockerignore"
       - ".github/workflows/python-ci.yml"
 
 permissions:
   contents: read
 
 concurrency:
-  group: python-ci-${{ github.workflow }}-${{ github.ref }}
+  group: python-docker-ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   test:
-    name: Unit tests — Python 3.12
+    name: Unit tests and container build
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
 
     steps:
       - name: Check out repository
@@ -55,3 +59,33 @@ jobs:
 
       - name: Run unit tests
         run: python -m pytest -v
+
+      - name: Build container image
+        run: |
+          docker build \
+            --file docker/kubernetes-health-reporter/Dockerfile \
+            --tag health-reporter-ci:test \
+            .
+
+      - name: Verify Python in container
+        run: |
+          docker run --rm \
+            --entrypoint python \
+            health-reporter-ci:test \
+            --version
+
+      - name: Verify kubectl in container
+        run: |
+          docker run --rm \
+            --entrypoint kubectl \
+            health-reporter-ci:test \
+            version --client
+
+      - name: Verify non-root container user
+        run: |
+          test "$(
+            docker run --rm \
+              --entrypoint id \
+              health-reporter-ci:test \
+              -u
+          )" = "10001"
