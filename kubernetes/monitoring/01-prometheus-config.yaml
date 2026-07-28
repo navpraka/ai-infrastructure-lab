@@ -12,7 +12,8 @@ data:
       evaluation_interval: 15s
       external_labels:
         cluster: ai-infrastructure-lab
-
+    rule_files:
+      - /etc/prometheus/rules/*.yaml
     scrape_configs:
       - job_name: prometheus
         static_configs:

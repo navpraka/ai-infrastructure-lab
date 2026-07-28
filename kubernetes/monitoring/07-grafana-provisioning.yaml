@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-provisioning
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/part-of: ai-infrastructure-lab
+data:
+  datasources.yaml: |
+    apiVersion: 1
+
+    datasources:
+      - name: Prometheus
+        uid: prometheus
+        type: prometheus
+        access: proxy
+        url: http://prometheus.monitoring.svc.cluster.local:9090
+        isDefault: true
+        editable: false
+
+  dashboards.yaml: |
+    apiVersion: 1
+
+    providers:
+      - name: ai-infrastructure-lab
+        orgId: 1
+        folder: AI Infrastructure Lab
+        type: file
+        disableDeletion: true
+        editable: false
+        options:
+          path: /var/lib/grafana/dashboards

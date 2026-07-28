@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-alert-rules
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: prometheus
+    app.kubernetes.io/part-of: ai-infrastructure-lab
+data:
+  health-reporter-alerts.yaml: |
+    groups:
+      - name: kubernetes-health-reporter
+        rules:
+          - alert: KubernetesHealthReporterTargetDown
+            expr: up{job="kubernetes-health-reporter"} == 0
+            for: 2m
+            labels:
+              severity: critical
+              component: health-reporter
+            annotations:
+              summary: Kubernetes health reporter metrics target is down
+              description: Prometheus cannot scrape the Kubernetes health reporter for more than two minutes.
+
+          - alert: KubernetesHealthReporterJobFailed
+            expr: kubernetes_health_reporter_exit_code != 0
+            for: 5m
+            labels:
+              severity: critical
+              component: health-reporter
+            annotations:
+              summary: Kubernetes health reporter CronJob failed
+              description: The latest Kubernetes health reporter run returned a non-zero exit code.
+
+          - alert: KubernetesNodesNotReady
+            expr: kubernetes_health_reporter_nodes_ready < kubernetes_health_reporter_nodes_total
+            for: 5m
+            labels:
+              severity: warning
+              component: kubernetes-cluster
+            annotations:
+              summary: One or more Kubernetes nodes are not Ready
+              description: Ready node count is lower than the total node count for at least five minutes.
+
+          - alert: KubernetesUnhealthyPodsDetected
+            expr: kubernetes_health_reporter_pods_unhealthy > 0
+            for: 5m
+            labels:
+              severity: warning
+              component: kubernetes-workloads
+            annotations:
+              summary: Unhealthy Kubernetes pods detected
+              description: The health reporter found one or more unhealthy pods for at least five minutes.

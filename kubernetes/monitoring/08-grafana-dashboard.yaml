@@ -1,0 +1,313 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/part-of: ai-infrastructure-lab
+data:
+  kubernetes-health-dashboard.json: |
+    {
+      "annotations": {
+        "list": []
+      },
+      "editable": false,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 6,
+            "x": 0,
+            "y": 0
+          },
+          "id": 1,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "center",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          },
+          "targets": [
+            {
+              "expr": "kubernetes_health_reporter_pods_unhealthy",
+              "legendFormat": "Unhealthy pods",
+              "refId": "A"
+            }
+          ],
+          "title": "Unhealthy Pods",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 6,
+            "x": 6,
+            "y": 0
+          },
+          "id": 2,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "center",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          },
+          "targets": [
+            {
+              "expr": "kubernetes_health_reporter_nodes_ready",
+              "legendFormat": "Ready",
+              "refId": "A"
+            },
+            {
+              "expr": "kubernetes_health_reporter_nodes_total",
+              "legendFormat": "Total",
+              "refId": "B"
+            }
+          ],
+          "title": "Nodes Ready / Total",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 6,
+            "x": 12,
+            "y": 0
+          },
+          "id": 3,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "center",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          },
+          "targets": [
+            {
+              "expr": "kubernetes_health_reporter_pods_healthy",
+              "legendFormat": "Healthy",
+              "refId": "A"
+            },
+            {
+              "expr": "kubernetes_health_reporter_pods_total",
+              "legendFormat": "Total",
+              "refId": "B"
+            }
+          ],
+          "title": "Healthy Pods / Total",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 6,
+            "x": 18,
+            "y": 0
+          },
+          "id": 4,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "center",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          },
+          "targets": [
+            {
+              "expr": "kubernetes_health_reporter_warning_events_total",
+              "legendFormat": "Warnings",
+              "refId": "A"
+            }
+          ],
+          "title": "Warning Events",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 10,
+            "w": 12,
+            "x": 0,
+            "y": 8
+          },
+          "id": 5,
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "single"
+            }
+          },
+          "targets": [
+            {
+              "expr": "kubernetes_health_reporter_nodes_ready",
+              "legendFormat": "Ready nodes",
+              "refId": "A"
+            },
+            {
+              "expr": "kubernetes_health_reporter_nodes_total",
+              "legendFormat": "Total nodes",
+              "refId": "B"
+            }
+          ],
+          "title": "Node Health Trend",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 10,
+            "w": 12,
+            "x": 12,
+            "y": 8
+          },
+          "id": 6,
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "single"
+            }
+          },
+          "targets": [
+            {
+              "expr": "kubernetes_health_reporter_pods_healthy",
+              "legendFormat": "Healthy pods",
+              "refId": "A"
+            },
+            {
+              "expr": "kubernetes_health_reporter_pods_unhealthy",
+              "legendFormat": "Unhealthy pods",
+              "refId": "B"
+            },
+            {
+              "expr": "kubernetes_health_reporter_pods_total",
+              "legendFormat": "Total pods",
+              "refId": "C"
+            }
+          ],
+          "title": "Pod Health Trend",
+          "type": "timeseries"
+        }
+      ],
+      "schemaVersion": 39,
+      "tags": [
+        "kubernetes",
+        "prometheus",
+        "ai-infrastructure-lab"
+      ],
+      "templating": {
+        "list": []
+      },
+      "time": {
+        "from": "now-6h",
+        "to": "now"
+      },
+      "title": "Kubernetes Health Reporter",
+      "uid": "kubernetes-health-reporter",
+      "version": 1
+    }

@@ -49,3 +49,18 @@ Run:
 
 ```bash
 python3 python/automation/environment_report.py
+
+```
+
+### Project 4: Kubernetes Monitoring, Grafana, and Alerting
+
+Implemented a Git-managed monitoring stack for the Kubernetes health reporter:
+
+- Prometheus metrics scraping and seven-day local retention
+- Prometheus alert rules for reporter, node, and pod health
+- Grafana deployment with a provisioned Prometheus datasource
+- Kubernetes health dashboard provisioned automatically from ConfigMaps
+- Secure Grafana admin password stored in a Kubernetes Secret, not Git
+- Troubleshooting runbook for Calico CNI authentication failures
+
+See [Day 8 documentation](docs/day-08-grafana-prometheus-alerting.md).
