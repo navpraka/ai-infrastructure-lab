@@ -12,8 +12,16 @@ data:
       evaluation_interval: 15s
       external_labels:
         cluster: ai-infrastructure-lab
+
+    alerting:
+      alertmanagers:
+        - static_configs:
+            - targets:
+                - alertmanager.monitoring.svc.cluster.local:9093
+
     rule_files:
       - /etc/prometheus/rules/*.yaml
+
     scrape_configs:
       - job_name: prometheus
         static_configs:
